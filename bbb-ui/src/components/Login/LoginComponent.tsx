@@ -30,7 +30,10 @@ const LoginComponent = () =>{
         e.preventDefault();
         await login(userLogin).then(response => {
             setUserLogin({username: "",password: ""} as LoginModel);
-            dispatch(loginUser({username: response.data.username,password: response.data.password}));
+            dispatch(loginUser({
+                username: response.data.username,
+                password: response.data.password
+            }));
         }).catch(()=>{
 
                 console.log("unauthorized");
