@@ -3,7 +3,8 @@ import {useDispatch, useSelector} from "react-redux";
 //import {useHistory} from 'react-router-dom';
 import {LoginModel} from "../../models/login-model";
 import {authState, loginUser} from '../../state-slices/auth/auth-slice';
-import {Row,Col,Form,Button,Container} from 'react-bootstrap';
+import {Row,Col,Form,Button,Container, Dropdown} from 'react-bootstrap';
+import {login} from "../../remote/api-client";
 
 const LoginComponent = () =>{
 
@@ -15,11 +16,26 @@ const LoginComponent = () =>{
     //this onchange function tracks the entry of the form fields
     //and populates our userLogin properties: username and password
     //with the use of event.target
-    const onchange = (e:any)=>{
+    let onChange = (e:any)=>{
+
         const {name,value} = e.target;
         setUserLogin({
             ...userLogin,[name]: value
         });
+        console.log(e.target);
+
+
+    }
+    let logUserIn = async(e:any) => {
+        e.preventDefault();
+        await login(userLogin).then(response => {
+            setUserLogin({username: "",password: ""} as LoginModel);
+            dispatch(loginUser({username: response.data.username,password: response.data.password}));
+        }).catch(()=>{
+
+                console.log("unauthorized");
+
+        })
 
     }
 
@@ -30,18 +46,18 @@ const LoginComponent = () =>{
             <Form>
                 <Form.Group>
                     <Form.Label>Username:
-                    <Form.Control name={"username"} value={userLogin.username} onChange = {onchange}  className="auth" type="text" placeholder={"username"} />
+                    <Form.Control name={"username"} value={userLogin.username} onChange = {onChange}  className="auth" type="text" placeholder={"username"} />
                     </Form.Label>
                 </Form.Group>
 
                 <Form.Group>
                     <Form.Label>Password:
-                    <Form.Control name={"password"} value={userLogin.username} onChange = {onchange} className="auth" type="password" placeholder={"********"} />
+                    <Form.Control name={"password"} value={userLogin.password} onChange = {onChange} className="auth" type="password" placeholder={"********"} />
                     </Form.Label>
                 </Form.Group>
 
                 <Form.Group>
-                    <Button name={"Login"} type="submit" value= "Login" className={"btn"} >Login</Button>
+                    <Button name={"Login"} type="submit" value= "Login" className={"btn"} onClick = {logUserIn}>Login</Button>
                 </Form.Group>
 
             </Form>
